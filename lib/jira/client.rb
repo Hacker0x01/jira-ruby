@@ -3,7 +3,6 @@ require 'forwardable'
 require 'ostruct'
 
 module JIRA
-
   # This class is the main access point for all JIRA::Resource instances.
   #
   # The client must be initialized with an options hash containing
@@ -32,7 +31,6 @@ module JIRA
   # objects.
 
   class Client
-
     extend Forwardable
 
     # The OAuth::Consumer instance returned by the OauthClient
@@ -44,30 +42,37 @@ module JIRA
     # The configuration options for this client instance
     attr_reader :options
 
-    def_delegators :@request_client, :init_access_token, :set_access_token, :set_request_token, :request_token, :access_token
+    def_delegators :@request_client, :init_access_token, :set_access_token, :set_request_token, :request_token, :access_token, :authenticated?
 
     DEFAULT_OPTIONS = {
-      :site               => 'http://localhost:2990',
-      :context_path       => '/jira',
-      :rest_base_path     => "/rest/api/2",
-      :ssl_verify_mode    => OpenSSL::SSL::VERIFY_PEER,
-      :use_ssl            => true,
-      :auth_type          => :oauth,
-      :http_debug         => false
-    }
+      site: 'http://localhost:2990',
+      context_path: '/jira',
+      rest_base_path: '/rest/api/2',
+      ssl_verify_mode: OpenSSL::SSL::VERIFY_PEER,
+      use_ssl: true,
+      use_client_cert: false,
+      auth_type: :oauth,
+      http_debug: false
+    }.freeze
 
-    def initialize(options={})
+    def initialize(options = {})
       options = DEFAULT_OPTIONS.merge(options)
       @options = options
       @options[:rest_base_path] = @options[:context_path] + @options[:rest_base_path]
 
+      if options[:use_client_cert]
+        raise ArgumentError, 'Options: :cert_path must be set when :use_client_cert is true' unless @options[:cert_path]
+        raise ArgumentError, 'Options: :key_path must be set when :use_client_cert is true' unless @options[:key_path]
+        @options[:cert] = OpenSSL::X509::Certificate.new(File.read(@options[:cert_path]))
+        @options[:key] = OpenSSL::PKey::RSA.new(File.read(@options[:key_path]))
+      end
+
       case options[:auth_type]
-      when :oauth
+      when :oauth, :oauth_2legged
         @request_client = OauthClient.new(@options)
         @consumer = @request_client.consumer
       when :jwt
-        @options[:use_jwt] = true
-        @request_client = HttpClient.new(@options)
+        @request_client = JwtClient.new(@options)
       when :basic
         @request_client = HttpClient.new(@options)
       when :cookie
@@ -75,8 +80,10 @@ module JIRA
         @options[:use_cookies] = true
         @request_client = HttpClient.new(@options)
         @request_client.make_cookie_auth_request
+        @options.delete(:username)
+        @options.delete(:password)
       else
-        raise ArgumentError, 'Options: ":auth_type" must be ":oauth", ":cookie", ":basic" or ":jwt"'
+        raise ArgumentError, 'Options: ":auth_type" must be ":oauth",":oauth_2legged", ":cookie", ":basic" or ":jwt"'
       end
 
       @http_debug = @options[:http_debug]
@@ -146,8 +153,20 @@ module JIRA
       JIRA::Resource::FieldFactory.new(self)
     end
 
+    def Board
+      JIRA::Resource::BoardFactory.new(self)
+    end
+
     def RapidView
       JIRA::Resource::RapidViewFactory.new(self)
+    end
+
+    def Sprint
+      JIRA::Resource::SprintFactory.new(self)
+    end
+
+    def SprintReport
+      JIRA::Resource::SprintReportFactory.new(self)
     end
 
     def ServerInfo
@@ -160,6 +179,10 @@ module JIRA
 
     def ApplicationLink
       JIRA::Resource::ApplicationLinkFactory.new(self)
+    end
+
+    def Watcher
+      JIRA::Resource::WatcherFactory.new(self)
     end
 
     def Webhook
@@ -201,27 +224,26 @@ module JIRA
 
     # HTTP methods with a body
     def post(path, body = '', headers = {})
-      headers = {'Content-Type' => 'application/json'}.merge(headers)
+      headers = { 'Content-Type' => 'application/json' }.merge(headers)
       request(:post, path, body, merge_default_headers(headers))
     end
 
     def put(path, body = '', headers = {})
-      headers = {'Content-Type' => 'application/json'}.merge(headers)
+      headers = { 'Content-Type' => 'application/json' }.merge(headers)
       request(:put, path, body, merge_default_headers(headers))
     end
 
     # Sends the specified HTTP request to the REST API through the
     # appropriate method (oauth, basic).
-    def request(http_method, path, body = '', headers={})
+    def request(http_method, path, body = '', headers = {})
       puts "#{http_method}: #{path} - [#{body}]" if @http_debug
       @request_client.request(http_method, path, body, headers)
     end
 
     protected
 
-      def merge_default_headers(headers)
-        {'Accept' => 'application/json'}.merge(headers)
-      end
-
+    def merge_default_headers(headers)
+      { 'Accept' => 'application/json' }.merge(headers)
+    end
   end
 end

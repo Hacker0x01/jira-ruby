@@ -1,13 +1,15 @@
 module JIRA
   module Resource
-    class RemotelinkFactory < JIRA::BaseFactory # :nodoc:
+    class WatcherFactory < JIRA::BaseFactory # :nodoc:
     end
 
-    class Remotelink < JIRA::Base
+    class Watcher < JIRA::Base
       belongs_to :issue
 
+      nested_collections true
+
       def self.endpoint_name
-        'remotelink'
+        'watchers'
       end
 
       def self.all(client, options = {})
@@ -17,8 +19,8 @@ module JIRA
         path = "#{issue.self}/#{endpoint_name}"
         response = client.get(path)
         json = parse_json(response.body)
-        json.map do |link|
-          issue.remotelink.build(link)
+        json['watchers'].map do |watcher|
+          issue.watchers.build(watcher)
         end
       end
     end
