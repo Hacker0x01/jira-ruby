@@ -1,7 +1,6 @@
 require 'oauth'
 require 'json'
 require 'net/https'
-# require 'pry'
 
 module JIRA
   class RequestClient
@@ -11,7 +10,6 @@ module JIRA
 
     def request(*args)
       response = make_request(*args)
-      # binding.pry unless response.kind_of?(Net::HTTPSuccess)
       raise HTTPError, response unless response.is_a?(Net::HTTPSuccess)
       response
     end
