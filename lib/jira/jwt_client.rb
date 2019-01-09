@@ -1,8 +1,4 @@
-require 'json'
 require 'atlassian/jwt'
-require 'net/https'
-require 'cgi/cookie'
-require 'uri'
 
 module JIRA
   class JwtClient < HttpClient

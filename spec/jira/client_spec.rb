@@ -230,7 +230,7 @@ describe JIRA::Client do
     specify { expect(subject.request_client).to be_a JIRA::JwtClient }
 
     it 'sets the username and password' do
-      expect(subject.options[:shared_secret]).to eq(shared_secret)
+      expect(subject.options[:shared_secret]).to eq('shared_secret_key')
     end
 
     context 'with a incorrect jwt key' do
