@@ -93,19 +93,5 @@ module JIRA
       request.add_field('Cookie', cookie_array.join('; ')) if cookie_array.any?
       request
     end
-
-    def jwt_header_params(http_method, url)
-      claim = Atlassian::Jwt.build_claims \
-        @options[:issuer],
-        url,
-        http_method.to_s,
-        @options[:site],
-        (Time.now - 60.seconds).to_i,
-        (Time.now + 1.day).to_i
-
-      jwt = JWT.encode claim, @options[:shared_secret]
-
-      "?jwt=#{jwt}"
-    end
   end
 end
