@@ -72,24 +72,24 @@ module JIRA
       @access_token
     end
 
-    def make_request(http_method, path, body = '', headers = {})
+    def make_request(http_method, url, body = '', headers = {})
       # When using oauth_2legged we need to add an empty oauth_token parameter to every request.
       if @options[:auth_type] == :oauth_2legged
         oauth_params_str = 'oauth_token='
-        uri = URI.parse(path)
+        uri = URI.parse(url)
         uri.query = if uri.query.to_s == ''
                       oauth_params_str
                     else
                       uri.query + '&' + oauth_params_str
                     end
-        path = uri.to_s
+        url = uri.to_s
       end
 
       case http_method
       when :delete, :get, :head
-        response = access_token.send http_method, path, headers
+        response = access_token.send http_method, url, headers
       when :post, :put
-        response = access_token.send http_method, path, body, headers
+        response = access_token.send http_method, url, body, headers
       end
       @authenticated = true
       response
@@ -97,7 +97,7 @@ module JIRA
 
     def make_multipart_request(url, file, headers = {})
       data = { 'file' => UploadIO.new(file, 'application/binary', file) }
-      request = Net::HTTP::Post::Multipart.new path, data, headers
+      request = Net::HTTP::Post::Multipart.new url, data, headers
 
       access_token.sign! request
       Net::HTTP.start(url) do |http|
