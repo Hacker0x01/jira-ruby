@@ -31,9 +31,26 @@ module JIRA
       request.body = body unless body.nil?
       add_cookies(request) if options[:use_cookies]
       request.basic_auth(@options[:username], @options[:password]) if @options[:username] && @options[:password]
+
       response = basic_auth_http_conn.request(request)
       @authenticated = response.is_a? Net::HTTPOK
       store_cookies(response) if options[:use_cookies]
+
+      response
+    end
+
+    def make_multipart_request(url, file, headers = {})
+      data = { 'file' => UploadIO.new(file, 'application/binary', file) }
+
+      path = request_path(url)
+      request = Net::HTTP::Post::Multipart.new path, data, headers
+      add_cookies(request) if options[:use_cookies]
+      request.basic_auth(@options[:username], @options[:password]) if @options[:username] && @options[:password]
+
+      response = basic_auth_http_conn.request(request)
+      @authenticated = response.is_a? Net::HTTPOK
+      store_cookies(response) if options[:use_cookies]
+
       response
     end
 

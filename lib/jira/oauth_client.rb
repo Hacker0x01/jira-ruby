@@ -95,6 +95,16 @@ module JIRA
       response
     end
 
+    def make_multipart_request(url, file, headers = {})
+      data = { 'file' => UploadIO.new(file, 'application/binary', file) }
+      request = Net::HTTP::Post::Multipart.new path, data, headers
+
+      access_token.sign! request
+      Net::HTTP.start(url) do |http|
+        http.request(req)
+      end
+    end
+
     def authenticated?
       @authenticated
     end
