@@ -100,9 +100,10 @@ module JIRA
       request = Net::HTTP::Post::Multipart.new url, data, headers
 
       access_token.sign! request
-      Net::HTTP.start(url) do |http|
-        http.request(req)
-      end
+
+      response = consumer.http.request(request)
+      @authenticated = true
+      response
     end
 
     def authenticated?

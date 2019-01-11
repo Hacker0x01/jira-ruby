@@ -20,7 +20,7 @@ module JIRA
       end
 
       def save!(attrs)
-        headers = { 'X-Atlassian-Token' => 'nocheck' }
+        headers = { 'X-Atlassian-Token' => 'no-check' }
 
         # Execute the multipart post here
         response = client.post_multipart(url, attrs['file'], headers)
