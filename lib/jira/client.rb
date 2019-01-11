@@ -230,7 +230,7 @@ module JIRA
 
     def post_multipart(path, file, headers = {})
       puts "post multipart: #{path} - [#{file}]" if @http_debug
-      @request_client.request_multipart(path, body, headers)
+      @request_client.request_multipart(path, file, headers)
     end
 
     def put(path, body = '', headers = {})
