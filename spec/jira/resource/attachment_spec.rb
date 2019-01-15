@@ -60,7 +60,7 @@ describe JIRA::Resource::Attachment do
   end
 
   describe '#save!' do
-    subject { attachment.save!('file' => path_to_file) }
+    subject { attachment.save!(:file => path_to_file) }
 
     let(:path_to_file) { './spec/mock_responses/issue.json' }
     let(:response) do
