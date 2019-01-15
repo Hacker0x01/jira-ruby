@@ -2,8 +2,6 @@ require 'atlassian/jwt'
 
 module JIRA
   class JwtClient < HttpClient
-    attr_accessor :http_method
-
     def make_request(http_method, url, body = '', headers = {})
       @http_method = http_method
 
@@ -17,6 +15,8 @@ module JIRA
     end
 
     private
+
+    attr_accessor :http_method
 
     def request_path(url)
       super(url) + "?jwt=#{jwt_header(url)}"
