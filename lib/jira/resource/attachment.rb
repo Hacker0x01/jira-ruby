@@ -21,7 +21,7 @@ module JIRA
 
       def save!(attrs)
         headers = { 'X-Atlassian-Token' => 'no-check' }
-        data = { 'file' => UploadIO.new(attrs['file'], 'application/binary', attrs['file']) }
+        data = { 'file' => UploadIO.new(attrs[:file], 'application/binary', attrs[:file]) }
 
         # Execute the multipart post here
         response = client.post_multipart(url, data , headers)
