@@ -20,14 +20,11 @@ module JIRA
       end
 
       def save!(attrs)
-        headers = { 'X-Atlassian-Token' => 'nocheck' }
-        data = { 'file' => UploadIO.new(attrs['file'], 'application/binary', attrs['file']) }
+        headers = { 'X-Atlassian-Token' => 'no-check' }
+        data = { 'file' => UploadIO.new(attrs[:file], 'application/binary', attrs[:file]) }
 
-        request = Net::HTTP::Post::Multipart.new url, data, headers
-        request.basic_auth(client.request_client.options[:username],
-                           client.request_client.options[:password])
-
-        response = client.request_client.basic_auth_http_conn.request(request)
+        # Execute the multipart post here
+        response = client.post_multipart(url, data , headers)
 
         set_attrs(attrs, false)
         unless response.body.nil? || response.body.length < 2
