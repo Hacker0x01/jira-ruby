@@ -37,6 +37,8 @@ module JIRA
         uri.request_uri
       end
 
+      private
+
       def jwt_header
         claim = Atlassian::Jwt.build_claims \
           issuer,
