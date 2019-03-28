@@ -52,7 +52,8 @@ module JIRA
       use_ssl: true,
       use_client_cert: false,
       auth_type: :oauth,
-      http_debug: false
+      http_debug: false,
+      add_gdpr_header: false
     }.freeze
 
     def initialize(options = {})
@@ -230,7 +231,7 @@ module JIRA
 
     def post_multipart(path, file, headers = {})
       puts "post multipart: #{path} - [#{file}]" if @http_debug
-      @request_client.request_multipart(path, file, headers)
+      @request_client.request_multipart(path, file, merge_default_headers(headers))
     end
 
     def put(path, body = '', headers = {})
@@ -248,7 +249,11 @@ module JIRA
     protected
 
     def merge_default_headers(headers)
-      { 'Accept' => 'application/json' }.merge(headers)
+      default_headers = { 'Accept' => 'application/json' }
+      if @options[:add_gdpr_header]
+        default_headers.merge('x-atlassian-force-account-id' => true)
+      end
+      default_headers.merge(headers)
     end
   end
 end
