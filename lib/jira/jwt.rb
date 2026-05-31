@@ -37,7 +37,7 @@ module JIRA
     end
 
     def canonicalize_uri(uri, base_uri)
-      path = uri.path.sub(/^#{base_uri.path}/, '')
+      path = uri.path.delete_prefix(base_uri.path)
       path = '/' if path.nil? || path.empty?
       path = '/' + path unless path.start_with?('/')
       path.chomp!('/') if path.length > 1
@@ -50,7 +50,7 @@ module JIRA
       query = CGI.parse(query)
       query.delete('jwt')
       query.each do |k, v|
-        query[k] = v.map { |a| CGI.escape(a) }.join(',') if v.is_a?(Array)
+        query[k] = v.map { |a| CGI.escape(a) }.sort.join(',') if v.is_a?(Array)
         query[k].gsub!('+', '%20')
         query[k].gsub!('%7E', '~')
       end

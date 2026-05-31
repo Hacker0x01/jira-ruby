@@ -1,4 +1,4 @@
-require 'jira/jwt_uri_builder'
+require 'jira/jwt'
 
 module JIRA
   class JwtClient < HttpClient
