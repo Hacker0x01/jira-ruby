@@ -1,3 +1,5 @@
+require 'cgi'
+
 module JIRA
   module Resource
     class UserFactory < JIRA::BaseFactory # :nodoc:
@@ -13,7 +15,7 @@ module JIRA
       MAX_RESULTS = 1000
 
       def self.singular_path(client, key, prefix = '/')
-        collection_path(client, prefix) + '?username=' + key
+        collection_path(client, prefix) + '?username=' + CGI.escape(key.to_s)
       end
 
       # Cannot retrieve more than 1,000 users through the api, please see: https://jira.atlassian.com/browse/JRASERVER-65089

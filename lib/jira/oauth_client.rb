@@ -92,6 +92,8 @@ module JIRA
         response = access_token.send http_method, url, headers
       when :post, :put
         response = access_token.send http_method, url, body, headers
+      else
+        raise ArgumentError, "Unsupported HTTP method: #{http_method}"
       end
       @authenticated = true
       response
