@@ -134,5 +134,25 @@ describe JIRA::Resource::Attachment do
         expect(attachment.size).to eq 23_123
       end
     end
+
+    context 'when file path contains directories' do
+      let(:file_io) { StringIO.new('file content') }
+
+      before do
+        allow(file_io).to receive(:path).and_return('/tmp/uploads/secret/evidence.pdf')
+      end
+
+      subject { attachment.save!('file' => file_io) }
+
+      it 'sends only the basename as the upload filename' do
+        expect(client).to receive(:post_multipart) do |_path, data, _headers|
+          upload_io = data['file']
+          expect(upload_io.original_filename).to eq('evidence.pdf')
+          response
+        end
+
+        subject
+      end
+    end
   end
 end

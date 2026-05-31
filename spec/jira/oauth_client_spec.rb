@@ -143,6 +143,20 @@ describe JIRA::OauthClient do
       end
     end
 
+    describe 'unsupported http method' do
+      let(:access_token) { double }
+
+      before do
+        allow(oauth_client).to receive(:access_token).and_return(access_token)
+      end
+
+      it 'raises ArgumentError and does not set authenticated' do
+        expect { oauth_client.make_request(:patch, '/path', '', {}) }
+          .to raise_error(ArgumentError, /Unsupported HTTP method: patch/)
+        expect(oauth_client.authenticated?).to be_falsey
+      end
+    end
+
     describe 'auth type is oauth_2legged' do
       let(:oauth__2legged_client) do
         options = { consumer_key: 'foo', consumer_secret: 'bar', auth_type: :oauth_2legged }

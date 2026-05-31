@@ -18,6 +18,14 @@ describe JIRA::Resource::User do
     it_should_behave_like 'a resource'
     it_should_behave_like 'a resource with a singular GET endpoint'
 
+    describe '.singular_path' do
+      it 'URL-encodes special characters in the username' do
+        mock_client = double(options: { rest_base_path: '/jira/rest/api/2', context_path: '/jira' })
+        path = JIRA::Resource::User.singular_path(mock_client, 'admin&expand=groups')
+        expect(path).to eq('/jira/rest/api/2/user?username=admin%26expand%3Dgroups')
+      end
+    end
+
     describe '#all' do
       let(:client) do
         client = double(options: { rest_base_path: '/jira/rest/api/2' })
