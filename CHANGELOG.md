@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.0.1
+
+### Security
+
+- Explicit `HS256` algorithm in `JWT.encode` calls — prevents algorithm confusion if jwt gem defaults change.
+- JWT token lifetime reduced from 24 hours to 5 minutes — limits replay attack window per Atlassian recommendations.
+- `Resource::User#singular_path` now URL-encodes the username — prevents query parameter injection.
+- `Resource::Attachment#save!` sends only the basename as filename — prevents leaking server filesystem paths.
+
+### Fixed
+
+- `Base#set_attrs` with `clobber: false` no longer corrupts `@attrs` when a nested key doesn't exist yet.
+- `OauthClient#make_request` raises `ArgumentError` for unsupported HTTP methods instead of silently setting `@authenticated = true`.
+
 ## 3.0.0
 
 ### Breaking Changes

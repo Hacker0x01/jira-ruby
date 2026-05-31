@@ -317,6 +317,12 @@ describe JIRA::Base do
       subject.set_attrs({ 'foo' => { 'fum' => 'dum' } }, false)
       expect(subject.foo).to eq('bar' => 'baz', 'fum' => 'dum')
     end
+
+    it 'initializes missing nested keys when clobber is false' do
+      subject.attrs = {}
+      subject.set_attrs({ 'foo' => { 'bar' => 'baz' } }, false)
+      expect(subject.foo).to eq('bar' => 'baz')
+    end
   end
 
   describe 'delete' do

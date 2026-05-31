@@ -55,5 +55,21 @@ describe JIRA::JwtClient::JwtUriBuilder do
         expect(subject.count('?')).to eq(1)
       end
     end
+
+    context 'token properties' do
+      let(:url) { 'http://localhost:2990/rest/api/2/issue' }
+
+      it 'uses HS256 algorithm' do
+        token = subject.match(/jwt=([^&]+)/)[1]
+        header = JSON.parse(Base64.decode64(token.split('.').first))
+        expect(header['alg']).to eq('HS256')
+      end
+
+      it 'uses a short-lived token (5 minute expiry window)' do
+        token = subject.match(/jwt=([^&]+)/)[1]
+        payload = JWT.decode(token, shared_secret, true, algorithms: ['HS256']).first
+        expect(payload['exp'] - payload['iat']).to be <= 330
+      end
+    end
   end
 end

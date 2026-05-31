@@ -20,13 +20,14 @@ module JIRA
       end
 
       def save!(attrs, path = url)
-        file = attrs['file'] || attrs[:file] # Keep supporting 'file' parameter as a string for backward compatibility
+        file = attrs['file'] || attrs[:file]
         mime_type = attrs[:mimeType] || 'application/binary'
+        filename = File.basename(file.respond_to?(:path) ? file.path : file.to_s)
 
         headers = { 'X-Atlassian-Token' => 'nocheck' }
-        data = { 'file' => UploadIO.new(file, mime_type, file) }
+        data = { 'file' => UploadIO.new(file, mime_type, filename) }
 
-        response = client.post_multipart(path, data , headers)
+        response = client.post_multipart(path, data, headers)
 
         set_attributes(attrs, response)
 

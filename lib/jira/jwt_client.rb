@@ -38,16 +38,17 @@ module JIRA
       private
 
       def jwt_header
+        now = Time.now.to_i
         claim = JIRA::Jwt.build_claims(
           issuer,
           request_url,
           http_method.to_s,
           site,
-          (Time.now - 60).to_i,
-          (Time.now + 86_400).to_i
+          now - 30,
+          now + 300
         )
 
-        JWT.encode(claim, shared_secret)
+        JWT.encode(claim, shared_secret, 'HS256')
       end
     end
 
