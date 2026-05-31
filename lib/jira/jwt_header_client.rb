@@ -1,4 +1,4 @@
-require 'atlassian/jwt'
+require 'jira/jwt_uri_builder'
 
 module JIRA
   class JwtHeaderClient < HttpClient
@@ -21,7 +21,7 @@ module JIRA
     end
 
     def jwt_token(http_method, url)
-      claim = Atlassian::Jwt.build_claims(
+      claim = JIRA::Jwt.build_claims(
         @options[:issuer],
         url,
         http_method.to_s,

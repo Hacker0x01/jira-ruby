@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.licenses    = ['MIT']
   s.metadata    = { 'source_code_uri' => 'https://github.com/sumoheavy/jira-ruby' }
 
-  s.required_ruby_version = '>= 1.9.3'
+  s.required_ruby_version = '>= 2.7.0'
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
@@ -20,16 +20,17 @@ Gem::Specification.new do |s|
 
   # Runtime Dependencies
   s.add_runtime_dependency 'activesupport'
-  s.add_runtime_dependency 'atlassian-jwt'
+  s.add_runtime_dependency 'jwt', '>= 2.1'
   s.add_runtime_dependency 'multipart-post'
-  s.add_runtime_dependency 'oauth', '~> 0.5', '>= 0.5.0'
+  s.add_runtime_dependency 'oauth', '>= 0.5', '< 2'
+  s.add_runtime_dependency 'ostruct'
 
   # Development Dependencies
-  s.add_development_dependency 'guard', '~> 2.13', '>= 2.13.0'
-  s.add_development_dependency 'guard-rspec', '~> 4.6', '>= 4.6.5'
-  s.add_development_dependency 'pry', '~> 0.10', '>= 0.10.3'
+  s.add_development_dependency 'guard', '~> 2.18'
+  s.add_development_dependency 'guard-rspec', '~> 4.7'
+  s.add_development_dependency 'pry'
   s.add_development_dependency 'railties'
-  s.add_development_dependency 'rake', '~> 10.3', '>= 10.3.2'
-  s.add_development_dependency 'rspec', '~> 3.0', '>= 3.0.0'
-  s.add_development_dependency 'webmock', '~> 1.18', '>= 1.18.0'
+  s.add_development_dependency 'rake', '>= 12.0'
+  s.add_development_dependency 'rspec', '~> 3.0'
+  s.add_development_dependency 'webmock', '>= 3.0'
 end
