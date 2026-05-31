@@ -60,7 +60,7 @@ module JIRA
         url,
         http_method.to_s,
         @options[:shared_secret],
-        @options[:site],
+        @options[:site] + @options[:context_path].to_s,
         @options[:issuer]
       ).build
     end

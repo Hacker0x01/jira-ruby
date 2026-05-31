@@ -48,8 +48,16 @@ describe JIRA::Jwt do
       expect(canonicalize('/rest/api/2/project', '')).to eq('/rest/api/2/project')
     end
 
-    it 'does not double-strip when path does not start with context' do
+    it 'does not strip when path does not start with context' do
       expect(canonicalize('/other/rest/api', '/jira')).to eq('/other/rest/api')
+    end
+
+    it 'does not strip a partial path segment match' do
+      expect(canonicalize('/jira2/rest/api', '/jira')).to eq('/jira2/rest/api')
+    end
+
+    it 'strips when followed by a slash (segment boundary)' do
+      expect(canonicalize('/jira/rest/api', '/jira')).to eq('/rest/api')
     end
   end
 

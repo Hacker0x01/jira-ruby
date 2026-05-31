@@ -25,7 +25,7 @@ module JIRA
         @options[:issuer],
         url,
         http_method.to_s,
-        @options[:site],
+        @options[:site] + @options[:context_path].to_s,
         (Time.now - 60).to_i,
         (Time.now + 86_400).to_i
       )

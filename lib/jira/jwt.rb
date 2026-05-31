@@ -37,7 +37,12 @@ module JIRA
     end
 
     def canonicalize_uri(uri, base_uri)
-      path = uri.path.delete_prefix(base_uri.path)
+      base_path = base_uri.path
+      path = uri.path
+      if !base_path.empty? && path.start_with?(base_path)
+        remainder = path[base_path.length..]
+        path = remainder if remainder.empty? || remainder.start_with?('/')
+      end
       path = '/' if path.nil? || path.empty?
       path = '/' + path unless path.start_with?('/')
       path.chomp!('/') if path.length > 1
