@@ -140,10 +140,12 @@ describe JIRA::Client do
     subject { JIRA::Client.new(username: 'foo', password: 'bar', auth_type: :basic) }
 
     before(:each) do
-      stub_request(:get, 'https://foo:bar@localhost:2990/jira/rest/api/2/project')
+      stub_request(:get, 'https://localhost:2990/jira/rest/api/2/project')
+        .with(basic_auth: %w[foo bar])
         .to_return(status: 200, body: '[]', headers: {})
 
-      stub_request(:get, 'https://foo:badpassword@localhost:2990/jira/rest/api/2/project')
+      stub_request(:get, 'https://localhost:2990/jira/rest/api/2/project')
+        .with(basic_auth: %w[foo badpassword])
         .to_return(status: 401, headers: {})
     end
 

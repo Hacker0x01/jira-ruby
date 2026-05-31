@@ -1,4 +1,4 @@
-require 'atlassian/jwt'
+require 'jira/jwt'
 
 module JIRA
   class JwtClient < HttpClient
@@ -38,15 +38,16 @@ module JIRA
       private
 
       def jwt_header
-        claim = Atlassian::Jwt.build_claims \
+        claim = JIRA::Jwt.build_claims(
           issuer,
           request_url,
           http_method.to_s,
           site,
           (Time.now - 60).to_i,
           (Time.now + 86_400).to_i
+        )
 
-        JWT.encode claim, shared_secret
+        JWT.encode(claim, shared_secret)
       end
     end
 
@@ -59,7 +60,7 @@ module JIRA
         url,
         http_method.to_s,
         @options[:shared_secret],
-        @options[:site],
+        @options[:site] + @options[:context_path].to_s,
         @options[:issuer]
       ).build
     end
