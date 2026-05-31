@@ -8,7 +8,12 @@ module JIRA
 
     def initialize(response)
       @response = response
-      @message = response.try(:message).presence || response.try(:body)
+      msg = response.respond_to?(:message) ? response.message : nil
+      @message = if msg.nil? || msg.empty?
+                   response.respond_to?(:body) ? response.body : nil
+                 else
+                   msg
+                 end
     end
   end
 end
